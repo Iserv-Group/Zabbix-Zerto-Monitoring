@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.2</version>
+    <date>2020-12-29T19:54:43Z</date>
+    <groups>
+        <group>
+            <name>TEMPLATES</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template Zerto with Discovery</template>
+            <name>Template Zerto with Discovery</name>
+            <groups>
+                <group>
+                    <name>TEMPLATES</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Zerto Replication</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Zerto VPGs</name>
+                    <key>zerto[&quot;Discovery&quot;]</key>
+                    <delay>3600</delay>
+                    <lifetime>7d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Actual RPO for VPG: {#VPGNAME}</name>
+                            <key>zerto[ActualRPO,{#VPGIDENTIFIER}]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <units>s</units>
+                            <applications>
+                                <application>
+                                    <name>Zerto Replication</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&gt;900</expression>
+                                    <name>Zerto - Actual RPO for {#VPGNAME} VPG is higher than 15min</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Last Test Date for VPG: {#VPGNAME}</name>
+                            <key>zerto[LastTest,{#VPGIDENTIFIER}]</key>
+                            <delay>3600</delay>
+                            <history>7d</history>
+                            <units>unixtime</units>
+                            <applications>
+                                <application>
+                                    <name>Zerto Replication</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{fuzzytime(15552000)}=0</expression>
+                                    <name>Zerto - Last test date for {#VPGNAME} to older than 6 month</name>
+                                    <priority>AVERAGE</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Source Site for VPG: {#VPGNAME}</name>
+                            <key>zerto[SourceSite,{#VPGIDENTIFIER}]</key>
+                            <delay>3600</delay>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Zerto Replication</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Status for VPG: {#VPGNAME}</name>
+                            <key>zerto[Status,{#VPGIDENTIFIER}]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <applications>
+                                <application>
+                                    <name>Zerto Replication</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>ZertoStatus</name>
+                            </valuemap>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&gt;1</expression>
+                                    <name>Zerto - VPG {#VPGNAME} is not meeting SLA</name>
+                                    <priority>WARNING</priority>
+                                    <description>VPG isn't meeting History/RPO(Recovery Point Objective) SLA. This could be because of a temporary error, or a large change to the source VM's.</description>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Zerto - Error/Misconfiguration causing SLA Violation for {#VPGNAME}</name>
+                                            <expression>{Template Zerto with Discovery:zerto[Status,{#VPGIDENTIFIER}].last()}&gt;1 and {Template Zerto with Discovery:zerto[Status,{#VPGIDENTIFIER}].last()}&lt;5 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;6 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;12 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;23</expression>
+                                        </dependency>
+                                        <dependency>
+                                            <name>Zerto - VPG {#VPGNAME} has not met its SLA for over 4 Hours</name>
+                                            <expression>{Template Zerto with Discovery:zerto[Status,{#VPGIDENTIFIER}].min(3600)}&gt;1 or {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}=40</expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>SubStatus for VPG: {#VPGNAME}</name>
+                            <key>zerto[SubStatus,{#VPGIDENTIFIER}]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <applications>
+                                <application>
+                                    <name>Zerto Replication</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>ZertoSubStatus</name>
+                            </valuemap>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Target Site for VPG: {#VPGNAME}</name>
+                            <key>zerto[TargetSite,{#VPGIDENTIFIER}]</key>
+                            <delay>3600</delay>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Zerto Replication</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Used Storage for VPG: {#VPGNAME}</name>
+                            <key>zerto[UsedStorageInMB,{#VPGIDENTIFIER}]</key>
+                            <delay>3600</delay>
+                            <history>7d</history>
+                            <units>b</units>
+                            <applications>
+                                <application>
+                                    <name>Zerto Replication</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>VM Count for VPG: {#VPGNAME}</name>
+                            <key>zerto[VmsCount,{#VPGIDENTIFIER}]</key>
+                            <delay>3600</delay>
+                            <history>7d</history>
+                            <applications>
+                                <application>
+                                    <name>Zerto Replication</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes>
+                        <trigger_prototype>
+                            <expression>{Template Zerto with Discovery:zerto[Status,{#VPGIDENTIFIER}].last()}&gt;1 and {Template Zerto with Discovery:zerto[Status,{#VPGIDENTIFIER}].last()}&lt;5 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;6 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;12 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;23</expression>
+                            <name>Zerto - Error/Misconfiguration causing SLA Violation for {#VPGNAME}</name>
+                            <priority>HIGH</priority>
+                            <description>Below are the status codes for the VPG that triggered the alert.
+&lt;b&gt;VPG Status:&lt;/b&gt;  &lt;i&gt;{ITEM.LASTVALUE1}&lt;/i&gt;
+&lt;b&gt;VPG Sub Status:&lt;/b&gt; &lt;i&gt;{ITEM.LASTVALUE3}&lt;/i&gt;
+Check &lt;a href=&quot;https://www.zerto.com/myzerto/wp-content/uploads/2015/10/Zerto-Virtual-Manager-vSphere-Administration-Guide.pdf#page=158&quot;&gt;this link&lt;/a&gt; for descriptions of Zerto Sub Status'</description>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Template Zerto with Discovery:zerto[Status,{#VPGIDENTIFIER}].min(3600)}&gt;1 or {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}=40</expression>
+                            <name>Zerto - VPG {#VPGNAME} has not met its SLA for over 4 Hours</name>
+                            <priority>AVERAGE</priority>
+                            <description>VPG met its History/RPO(Recovery Point Objective) SLA in over 4 hours. This could be because of a temporary error, or a large change to the source VM's. Below are the status codes for the VPG that triggered the alert.
+&lt;b&gt;VPG Status:&lt;/b&gt;  &lt;i&gt;{ITEM.LASTVALUE1}&lt;/i&gt;
+&lt;b&gt;VPG Sub Status:&lt;/b&gt; &lt;i&gt;{ITEM.LASTVALUE2}&lt;/i&gt;</description>
+                            <dependencies>
+                                <dependency>
+                                    <name>Zerto - Error/Misconfiguration causing SLA Violation for {#VPGNAME}</name>
+                                    <expression>{Template Zerto with Discovery:zerto[Status,{#VPGIDENTIFIER}].last()}&gt;1 and {Template Zerto with Discovery:zerto[Status,{#VPGIDENTIFIER}].last()}&lt;5 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;6 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;12 and {Template Zerto with Discovery:zerto[SubStatus,{#VPGIDENTIFIER}].last()}&lt;&gt;23</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger_prototype>
+                    </trigger_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>Used Storage for {#VPGNAME}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Template Zerto with Discovery</host>
+                                        <key>zerto[UsedStorageInMB,{#VPGIDENTIFIER}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Zerto Actual RPO for {#VPGNAME}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Template Zerto with Discovery</host>
+                                        <key>zerto[ActualRPO,{#VPGIDENTIFIER}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+    <value_maps>
+        <value_map>
+            <name>ZertoStatus</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Initializing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>MeetingSLA</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>NotMeetingSLA</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>RpoNotMeetingSLA</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>HistoryNotMeetingSLA</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>FailingOver</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>Moving</newvalue>
+                </mapping>
+                <mapping>
+                    <value>7</value>
+                    <newvalue>Deleting</newvalue>
+                </mapping>
+                <mapping>
+                    <value>8</value>
+                    <newvalue>Recovered</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>ZertoSubStatus</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>None</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>InitialSync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Creating</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>VolumeInitialSync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>Sync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>RecoveryPossible</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>DeltaSync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>7</value>
+                    <newvalue>NeedsConfiguration</newvalue>
+                </mapping>
+                <mapping>
+                    <value>8</value>
+                    <newvalue>Error</newvalue>
+                </mapping>
+                <mapping>
+                    <value>9</value>
+                    <newvalue>EmptyProtectionGroup</newvalue>
+                </mapping>
+                <mapping>
+                    <value>10</value>
+                    <newvalue>DisconnectedFromPeerNoRecoveryPoints</newvalue>
+                </mapping>
+                <mapping>
+                    <value>11</value>
+                    <newvalue>FullSync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>12</value>
+                    <newvalue>VolumeDeltaSync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>13</value>
+                    <newvalue>VolumeFullSync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>14</value>
+                    <newvalue>FailingOverCommitting</newvalue>
+                </mapping>
+                <mapping>
+                    <value>15</value>
+                    <newvalue>FailingOverBeforeCommit</newvalue>
+                </mapping>
+                <mapping>
+                    <value>16</value>
+                    <newvalue>FailingOverRollingBack</newvalue>
+                </mapping>
+                <mapping>
+                    <value>17</value>
+                    <newvalue>Promoting</newvalue>
+                </mapping>
+                <mapping>
+                    <value>18</value>
+                    <newvalue>MovingCommitting</newvalue>
+                </mapping>
+                <mapping>
+                    <value>19</value>
+                    <newvalue>MovingBeforeCommit</newvalue>
+                </mapping>
+                <mapping>
+                    <value>20</value>
+                    <newvalue>MovingRollingBack</newvalue>
+                </mapping>
+                <mapping>
+                    <value>21</value>
+                    <newvalue>Deleting</newvalue>
+                </mapping>
+                <mapping>
+                    <value>22</value>
+                    <newvalue>PendingRemove</newvalue>
+                </mapping>
+                <mapping>
+                    <value>23</value>
+                    <newvalue>BitmapSync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>24</value>
+                    <newvalue>DisconnectedFromPeer</newvalue>
+                </mapping>
+                <mapping>
+                    <value>25</value>
+                    <newvalue>ReplicationPausedUserInitiated</newvalue>
+                </mapping>
+                <mapping>
+                    <value>26</value>
+                    <newvalue>ReplicationPausedSystemInitiated</newvalue>
+                </mapping>
+                <mapping>
+                    <value>27</value>
+                    <newvalue>RecoveryStorageProfileError</newvalue>
+                </mapping>
+                <mapping>
+                    <value>29</value>
+                    <newvalue>RollingBack</newvalue>
+                </mapping>
+                <mapping>
+                    <value>30</value>
+                    <newvalue>RecoveryStorageError</newvalue>
+                </mapping>
+                <mapping>
+                    <value>31</value>
+                    <newvalue>JournalStorageError</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32</value>
+                    <newvalue>VmNotProtectedError</newvalue>
+                </mapping>
+                <mapping>
+                    <value>33</value>
+                    <newvalue>JournalOrRecoveryMissingError</newvalue>
+                </mapping>
+                <mapping>
+                    <value>34</value>
+                    <newvalue>AddedVmsInInitialSync</newvalue>
+                </mapping>
+                <mapping>
+                    <value>35</value>
+                    <newvalue>ReplicationPausedForMissingVolume</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>
